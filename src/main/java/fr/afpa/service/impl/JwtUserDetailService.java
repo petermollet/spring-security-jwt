@@ -21,6 +21,6 @@ public class JwtUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserDAO userDAO = userRepository.findByUsername(username);
         if(userDAO == null) throw new UsernameNotFoundException("User not found with username : " + username);
-        return new User(userDAO.getUsername(), userDAO.getPassword(), new ArrayList<>());
+        return new User(userDAO.getUsername(), userDAO.getPassword(), userDAO.getAuthorities());
     }
 }

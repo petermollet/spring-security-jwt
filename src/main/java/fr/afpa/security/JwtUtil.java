@@ -5,12 +5,14 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Classe permettant de regrouper de petites méthodes permettant de traiter le JWT
@@ -33,11 +35,16 @@ public class JwtUtil {
      * @return Le token généré
      */
     public String generateToken(UserDetails userDetails) {
+        String authorities = userDetails.getAuthorities()
+                                        .stream()
+                                        .map(GrantedAuthority::getAuthority)
+                                        .collect(Collectors.joining(","));
         Map<String, Object> claims = new HashMap<>();
         //Si besoin, on peut rajouter des donner dans le claims ci-dessous
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())
+                .claim("auth", authorities)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_VALIDITY_MILLISECOND))
                 .signWith(SignatureAlgorithm.HS512, secret)
