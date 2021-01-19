@@ -2,6 +2,8 @@ package fr.afpa.entity.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -10,4 +12,5 @@ import lombok.*;
 public class UserSecurity {
     private String username;
     private String password;
+    private List<String> authorities;
 }

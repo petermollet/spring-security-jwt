@@ -3,9 +3,11 @@ package fr.afpa.controller;
 import fr.afpa.controller.exception.UsernameAlreadyExistException;
 import fr.afpa.entity.dto.UserDTO;
 import fr.afpa.entity.dto.UserSecurity;
+import fr.afpa.security.AuthorityConstant;
 import fr.afpa.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,5 +45,17 @@ public class UserController {
     @GetMapping("/hello")
     public String hello() {
         return "Hello world";
+    }
+
+    @Secured({AuthorityConstant.ROLE_USER, AuthorityConstant.ROLE_ADMIN})
+    @GetMapping("/hello-user")
+    public String helloAdmin() {
+        return "Hello user";
+    }
+
+    @Secured(AuthorityConstant.ROLE_ADMIN)
+    @GetMapping("/hello-admin")
+    public String helloUser() {
+        return "Hello admin";
     }
 }
