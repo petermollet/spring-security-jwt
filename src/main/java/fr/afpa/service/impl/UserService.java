@@ -5,11 +5,14 @@ import fr.afpa.entity.dao.UserDAO;
 import fr.afpa.entity.dto.UserDTO;
 import fr.afpa.entity.dto.UserSecurity;
 import fr.afpa.repository.IUserRepository;
+import fr.afpa.security.AuthorityConstant;
 import fr.afpa.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,13 +31,20 @@ public class UserService implements IUserService {
         UserDAO userDAO = new UserDAO();
         userDAO.setUsername(userSecurity.getUsername());
         userDAO.setPassword(passwordEncoder.encode(userSecurity.getPassword())); //On encode le password avec PasswordEncoder
-        userDAO.setAuthorities(
-                userSecurity.getAuthorities()
+        if(userSecurity.getAuthorities().size() == 0) {
+            AuthorityDAO authority = new AuthorityDAO(AuthorityConstant.ROLE_USER);
+            Set<AuthorityDAO> authorities = new HashSet<>();
+            authorities.add(authority);
+            userDAO.setAuthorities(authorities);
+        } else {
+            userDAO.setAuthorities(
+                    userSecurity.getAuthorities()
                             .stream()
                             .map(AuthorityDAO::new)
                             .collect(Collectors.toSet())
-        );
-        return userRepository.save(userDAO).getId();
+            );
+        }
+        return this.userRepository.save(userDAO).getId();
     }
 
     @Override
